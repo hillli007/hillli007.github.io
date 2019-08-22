@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="源码准备准备repo工具 Repo使用 清华大学开源镜像站  1234mkdir ~/binexport PATH=~/bin:$PATHcurl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/bin/repochmod a+x ~/bin/repo 指定清华源加快速度 1export REPO_URL=&amp;apos;ht">
+<meta name="keywords">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AOSP编译Nexus真机镜像">
+<meta property="og:url" content="https://hillli007.github.io/2018/10/15/android-framework/aosp-nexus/index.html">
+<meta property="og:site_name" content="LXL Notes">
+<meta property="og:description" content="源码准备准备repo工具 Repo使用 清华大学开源镜像站  1234mkdir ~/binexport PATH=~/bin:$PATHcurl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/bin/repochmod a+x ~/bin/repo 指定清华源加快速度 1export REPO_URL=&amp;apos;ht">
+<meta property="og:updated_time" content="2019-08-22T15:18:34.336Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AOSP编译Nexus真机镜像">
+<meta name="twitter:description" content="源码准备准备repo工具 Repo使用 清华大学开源镜像站  1234mkdir ~/binexport PATH=~/bin:$PATHcurl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/bin/repochmod a+x ~/bin/repo 指定清华源加快速度 1export REPO_URL=&amp;apos;ht">
+
+
+
+
+
+
+  <link rel="canonical" href="https://hillli007.github.io/2018/10/15/android-framework/aosp-nexus/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AOSP编译Nexus真机镜像 | LXL Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LXL Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Keep some mementos</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hillli007.github.io/2018/10/15/android-framework/aosp-nexus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Li Xiaolong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LXL Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AOSP编译Nexus真机镜像
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-15 00:17:34" itemprop="dateCreated datePublished" datetime="2018-10-15T00:17:34+08:00">2018-10-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-22 23:18:34" itemprop="dateModified" datetime="2019-08-22T23:18:34+08:00">2019-08-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android系统/" itemprop="url" rel="index"><span itemprop="name">Android系统</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="源码准备"><a href="#源码准备" class="headerlink" title="源码准备"></a>源码准备</h2><h3 id="准备repo工具"><a href="#准备repo工具" class="headerlink" title="准备repo工具"></a>准备repo工具</h3><ul>
+<li><a href="http://source.android.com/source/using-repo.html" target="_blank" rel="external">Repo使用</a></li>
+<li><a href="https://mirror.tuna.tsinghua.edu.cn/help/git-repo" target="_blank" rel="external">清华大学开源镜像站</a></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir ~/bin</span><br><span class="line">export PATH=~/bin:$PATH</span><br><span class="line">curl https://storage.googleapis.com/git-repo-downloads/repo &gt; ~/bin/repo</span><br><span class="line">chmod a+x ~/bin/repo</span><br></pre></td></tr></table></figure>
+<p>指定清华源加快速度</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export REPO_URL=&apos;https://mirrors.tuna.tsinghua.edu.cn/git/git-repo/&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="拉取"><a href="#拉取" class="headerlink" title="拉取"></a>拉取</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#官方仓库: https://android.googlesource.com/platform/manifest</span><br><span class="line">#清华源: https://aosp.tuna.tsinghua.edu.cn/platform/manifest</span><br><span class="line">repo init -u manifest-url -b branch/tag</span><br><span class="line">repo sync</span><br><span class="line">repo start branch-name --all</span><br></pre></td></tr></table></figure>
+<h3 id="manifest"><a href="#manifest" class="headerlink" title="manifest"></a>manifest</h3><p>repo库由清单文件管理，清单文件本身使用一个git库管理，repo init这一步其实就是确定好这个库的地址和分支，如果不用”-m”指定清单<br>文件，那么库要包含一个default.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;manifest&gt;</span><br><span class="line">&lt;remote fetch=&quot;ssh://lixiaolong@lixiaolong-pc/home/lixiaolong/xxx&quot; name=&quot;origin&quot; review=&quot;&quot;/&gt;</span><br><span class="line">&lt;default remote=&quot;origin&quot; revision=&quot;master&quot; sync-j=&quot;1&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 如果删掉，对应路径也会删掉 --&gt;</span><br><span class="line">&lt;project name=&quot;p1.git&quot; path=&quot;prj1&quot;/&gt;</span><br><span class="line">&lt;project name=&quot;p2.git&quot; path=&quot;prj2&quot;/&gt;</span><br><span class="line">&lt;/manifest&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="编译完整镜像"><a href="#编译完整镜像" class="headerlink" title="编译完整镜像"></a>编译完整镜像</h3><p>要编译完整镜像，需要checkout机型对应的tag，并且下载驱动</p>
+<ul>
+<li><a href="https://source.android.com" target="_blank" rel="external">AOSP官网</a></li>
+<li><a href="https://source.android.com/source/build-numbers.html#source-code-tags-and-builds" target="_blank" rel="external">查询对应的版本</a></li>
+<li><a href="https://developers.google.com/android/drivers" target="_blank" rel="external">驱动不开源，需下载</a></li>
+<li><a href="https://developers.google.com/android/images" target="_blank" rel="external">下载官方镜像(带GMS)</a></li>
+</ul>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><h3 id="编译依赖"><a href="#编译依赖" class="headerlink" title="编译依赖"></a>编译依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install aptitude</span><br><span class="line">sudo aptitude install libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-dev g++-multilib </span><br><span class="line">sudo aptitude install -y git flex bison gperf build-essential libncurses5-dev:i386</span><br><span class="line">sudo aptitude install tofrodos python-markdown libxml2-utils xsltproc zlib1g-dev:i386 </span><br><span class="line">sudo aptitude install dpkg-dev libsdl1.2-dev libesd0-dev</span><br><span class="line">sudo aptitude install git-core gnupg flex bison gperf build-essential</span><br><span class="line">sudo aptitude install zip curl zlib1g-dev gcc-multilib g++-multilib</span><br><span class="line">sudo aptitude install libc6-dev-i386</span><br><span class="line">sudo aptitude install lib32ncurses5-dev x11proto-core-dev libx11-dev</span><br><span class="line">sudo aptitude install libgl1-mesa-dev libxml2-utils xsltproc unzip m4</span><br><span class="line">sudo aptitude install lib32z-dev ccache</span><br></pre></td></tr></table></figure>
+<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># Java</span><br><span class="line">export JAVA_HOME=/path/to/java</span><br><span class="line">export JAVA_JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">export CLASSPATH=$JAVA_HOME/jre/lib</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JAVA_JRE_HOME/bin:$PATH</span><br><span class="line"></span><br><span class="line"># Android sdk</span><br><span class="line">export ANDROID_HOME=/path/to/android</span><br><span class="line">export ANDROID_SDK_PLATFORM_TOOLS=$ANDROID_HOME/platform-tools</span><br><span class="line">export ANDROID_SDK_TOOLS=$ANDROID_HOME/tools</span><br><span class="line">export ANDROID_BUILD_TOOLS=/path/to/buildtools</span><br><span class="line">export PATH=$ANDROID_SDK_PLATFORM_TOOLS:$ANDROID_SDK_TOOLS:$ANDROID_BUILD_TOOLS:$PATH</span><br><span class="line"></span><br><span class="line"># Android NDK</span><br><span class="line">export NDK=/path/to/ndk</span><br><span class="line">export PATH=$NDKROOT:$PATH</span><br><span class="line"></span><br><span class="line"># Custom path</span><br><span class="line">export PATH=~/bin:$PATH</span><br></pre></td></tr></table></figure>
+<h3 id="集成第三方产品"><a href="#集成第三方产品" class="headerlink" title="集成第三方产品"></a>集成第三方产品</h3><h4 id="集成GMS"><a href="#集成GMS" class="headerlink" title="集成GMS:"></a>集成GMS:</h4><p><a href="https://github.com/opengapps/aosp_build" target="_blank" rel="external">开源的openapps</a> ：包括基础服务、配置、APK等</p>
+<p>在devices.mk下调用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(call inherit-product-if-exists, vendor/gms-packs/products/gms.mk)</span><br></pre></td></tr></table></figure>
+<h3 id="编译问题记录"><a href="#编译问题记录" class="headerlink" title="编译问题记录"></a>编译问题记录</h3><ul>
+<li><a href="https://stackoverflow.com/questions/49955137/error-when-build-lineageos-make-ninja-wrapper-error-1" target="_blank" rel="external">https://stackoverflow.com/questions/49955137/error-when-build-lineageos-make-ninja-wrapper-error-1</a></li>
+</ul>
+<h3 id="IDE配置"><a href="#IDE配置" class="headerlink" title="IDE配置"></a>IDE配置</h3><p>调节启动参数：studio64.exe.vmoptions</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-Xms128m JVM初始分配的堆内存</span><br><span class="line">-Xmx512m JVM最大允许分配的堆内存，按需分配</span><br></pre></td></tr></table></figure>
+<p>用源码自带工具生成配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 生成新的 idegen.jar 文件</span><br><span class="line">source build/envsetup.sh</span><br><span class="line">mmm development/tools/idegen</span><br><span class="line"></span><br><span class="line"># 生成idea配置文件</span><br><span class="line">development/tools/idegen/idegen.sh</span><br></pre></td></tr></table></figure>
+<p>各个配置文件作用：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>android.iws</td>
+<td>包含工作区的个人设置，比如打开过的文件，版本控制工具的配置，本地修改历史，运行和debug的配置等</td>
+</tr>
+<tr>
+<td>android.ipr</td>
+<td>一般保存了工程相关的设置，比如modules和modules libraries的路径，编译器配置，入口点等</td>
+</tr>
+<tr>
+<td>android.iml</td>
+<td>用来描述modules。它包括modules路径、 依赖关系，顺序设置等。一个项目可以包含多个 *.iml 文件</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/15/android-framework/android-wms/" rel="next" title="android-wms">
+                <i class="fa fa-chevron-left"></i> android-wms
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/15/android/android-ndk/" rel="prev" title="android-ndk">
+                android-ndk <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Li Xiaolong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#源码准备"><span class="nav-number">1.</span> <span class="nav-text">源码准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备repo工具"><span class="nav-number">1.1.</span> <span class="nav-text">准备repo工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拉取"><span class="nav-number">1.2.</span> <span class="nav-text">拉取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#manifest"><span class="nav-number">1.3.</span> <span class="nav-text">manifest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译完整镜像"><span class="nav-number">1.4.</span> <span class="nav-text">编译完整镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译"><span class="nav-number">2.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译依赖"><span class="nav-number">2.1.</span> <span class="nav-text">编译依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境配置"><span class="nav-number">2.2.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集成第三方产品"><span class="nav-number">2.3.</span> <span class="nav-text">集成第三方产品</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集成GMS"><span class="nav-number">2.3.1.</span> <span class="nav-text">集成GMS:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译问题记录"><span class="nav-number">2.4.</span> <span class="nav-text">编译问题记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IDE配置"><span class="nav-number">2.5.</span> <span class="nav-text">IDE配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Li Xiaolong</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.3.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.6.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

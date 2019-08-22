@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="工作方式WMS内部工作方式采用的是惯例：Android消息驱动模型  1.2    WMS的IPC架构本地代理应用开发者通过WindowManager类和WMS打交道，比如上面实例的API：addView getSystemService实际返回的是WindowManager的实现WindowManagerImpl: 123456registerService(WINDOW_SERVICE, ne">
+<meta name="keywords">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android-wms">
+<meta property="og:url" content="https://hillli007.github.io/2018/10/15/android-framework/android-wms/index.html">
+<meta property="og:site_name" content="LXL Notes">
+<meta property="og:description" content="工作方式WMS内部工作方式采用的是惯例：Android消息驱动模型  1.2    WMS的IPC架构本地代理应用开发者通过WindowManager类和WMS打交道，比如上面实例的API：addView getSystemService实际返回的是WindowManager的实现WindowManagerImpl: 123456registerService(WINDOW_SERVICE, ne">
+<meta property="og:image" content="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-working.png">
+<meta property="og:image" content="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-native.png">
+<meta property="og:image" content="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-communicate.jpg">
+<meta property="og:image" content="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-relation.png">
+<meta property="og:updated_time" content="2019-08-22T16:03:47.289Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android-wms">
+<meta name="twitter:description" content="工作方式WMS内部工作方式采用的是惯例：Android消息驱动模型  1.2    WMS的IPC架构本地代理应用开发者通过WindowManager类和WMS打交道，比如上面实例的API：addView getSystemService实际返回的是WindowManager的实现WindowManagerImpl: 123456registerService(WINDOW_SERVICE, ne">
+<meta name="twitter:image" content="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-working.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://hillli007.github.io/2018/10/15/android-framework/android-wms/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>android-wms | LXL Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LXL Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Keep some mementos</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hillli007.github.io/2018/10/15/android-framework/android-wms/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Li Xiaolong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LXL Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">android-wms
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-15 00:19:31" itemprop="dateCreated datePublished" datetime="2018-10-15T00:19:31+08:00">2018-10-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-23 00:03:47" itemprop="dateModified" datetime="2019-08-23T00:03:47+08:00">2019-08-23</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android框架/" itemprop="url" rel="index"><span itemprop="name">Android框架</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h3><p>WMS内部工作方式采用的是惯例：Android消息驱动模型</p>
+<p><img src="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-working.png" alt="wms-working.png"></p>
+<h3 id="1-2-WMS的IPC架构"><a href="#1-2-WMS的IPC架构" class="headerlink" title="1.2    WMS的IPC架构"></a>1.2    WMS的IPC架构</h3><h4 id="本地代理"><a href="#本地代理" class="headerlink" title="本地代理"></a>本地代理</h4><p>应用开发者通过WindowManager类和WMS打交道，比如上面实例的API：<strong>addView</strong></p>
+<p>getSystemService实际返回的是WindowManager的实现WindowManagerImpl:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">registerService(WINDOW_SERVICE, <span class="keyword">new</span> ServiceFetcher() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">getService</span><span class="params">(ContextImpl ctx)</span> </span>&#123;</span><br><span class="line">          <span class="comment">//…</span></span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">new</span> WindowManagerImpl(display);</span><br><span class="line">        &#125;);</span><br><span class="line">｝</span><br></pre></td></tr></table></figure>
+<p><img src="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-native.png" alt="wms-native.png"></p>
+<p>WindowManagerImpl的addview实际上调用WindowManagerGlobal唯一实例的addview:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">        mGlobal.addView(view, params, mDisplay, mParentWindow);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>WindowManagerGlobal在每个应用中是唯一实例，负责管理该应用的所有窗口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;View&gt; mViews                         <span class="comment">//窗口View树的根</span></span><br><span class="line">ArrayList&lt;ViewRootImpl&gt; mRoots                 <span class="comment">//管理View树的ViewRoot</span></span><br><span class="line">ArrayList&lt;WindowManager.LayoutParams&gt; mParams  <span class="comment">//窗口属性</span></span><br></pre></td></tr></table></figure>
+<p>WindowManagerGlobal.addView除了记录View，还将为View新建一个ViewRoot</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root = <span class="keyword">new</span> ViewRootImpl(view.getContext(), display);</span><br><span class="line">view.setLayoutParams(wparams);</span><br><span class="line"></span><br><span class="line"><span class="comment">//添加到全局变量</span></span><br><span class="line">mViews.add(view);</span><br><span class="line">mRoots.add(root);</span><br><span class="line">mParams.add(wparams);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">//把View记录到ViewRoot的mView中，因为接下来ViewRoot要频繁访问</span></span><br><span class="line">  root.setView(view, wparams, panelParentView);</span><br><span class="line">&#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">  <span class="comment">//…</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ViewRoot是什么？"><a href="#ViewRoot是什么？" class="headerlink" title="ViewRoot是什么？"></a>ViewRoot是什么？</h4><ul>
+<li>ViewRoot是应用本地View系统引擎</li>
+<li>ViewRoot负责与WMS进行通信</li>
+<li>ViewRoot通过IWindowSession访问WMS</li>
+</ul>
+<p><img src="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-communicate.jpg" alt="wms-communicate.jpg"></p>
+<p>在ViewRoot的构造器中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewRootImpl</span><span class="params">(Context context, Display display)</span> </span>&#123;</span><br><span class="line">    Context = context;</span><br><span class="line">    <span class="comment">//获取连接</span></span><br><span class="line">    mWindowSession = WindowManagerGlobal.getWindowSession();</span><br><span class="line">    <span class="comment">//…</span></span><br><span class="line">    <span class="comment">//IWindow对象，WMS将通过它管理</span></span><br><span class="line">    mWindow = <span class="keyword">new</span> W(<span class="keyword">this</span>);</span><br><span class="line">    <span class="comment">//…</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="IWindowSession是什么？"><a href="#IWindowSession是什么？" class="headerlink" title="IWindowSession是什么？"></a>IWindowSession是什么？</h4><p>ViewRoot其实还是通过WM服务来获取IWindowSession，再通过IWindowSession来访问WMS，而不是直接访问WMS</p>
+<p>WindowManagerGlobal.getWindowSession()的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IWindowSession <span class="title">getWindowSession</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    IWindowManager windowManager = getWindowManagerService();</span><br><span class="line">    sWindowSession = windowManager.openSession();  <span class="comment">//划重点                       </span></span><br><span class="line">    <span class="keyword">return</span> sWindowSession;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>IWindowSession在服务端的实现是Session，Seesion.java实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Session</span> <span class="keyword">extends</span> <span class="title">IWindowSession</span>.<span class="title">Stub</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addToDisplay</span><span class="params">(IWindow window, …)</span> </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> mService.addWindow(<span class="keyword">this</span>, window, …);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="IWindow是什么？"><a href="#IWindow是什么？" class="headerlink" title="IWindow是什么？"></a>IWindow是什么？</h4><p>ViewRoot通过IWindowSeession.addToDisplay向WMS添加mWindow（W对象，IWindow子类），使WMS也可以访问Window，实现双向通信。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view, WindowManager.LayoutParams attrs, View panelParentView)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//…</span></span><br><span class="line">    res = mWindowSession.addToDisplay(mWindow, …);</span><br><span class="line">    <span class="comment">//…</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>到此，整个调用流程就出来了：</p>
+<p><img src="https://hillli-1253216866.cos.ap-shenzhen-fsi.myqcloud.com/blog/android-framework/wms-relation.png" alt="wms-relation.png"></p>
+<ol>
+<li>WindowManager.addview真正实现是WindowManagerGlobal.addView；</li>
+<li>WindowManagerGlobal.addView创建ViewRoot，保存view、viewroot、params；</li>
+<li>然后调用ViewRoot.setView，既调用WindowSession.addToDisplay；</li>
+<li>WindowSession.addToDisplay在服务端Session的实现：WMS.addWindow；</li>
+</ol>
+<h4 id="添加窗口"><a href="#添加窗口" class="headerlink" title="添加窗口"></a>添加窗口</h4><p>主要成员变量</p>
+<ul>
+<li>mSessions: WindowSession列表，与各窗口通信</li>
+<li>mTokenMap: WindowToken列表，一个token关联一系列有联系的窗口</li>
+<li>mWindowMap: WindowState列表，代表窗口</li>
+<li>mPolicy: 即 PhoneWindowManager</li>
+</ul>
+<p>addWindow的具体流程：</p>
+<ol>
+<li>权限检查</li>
+<li>WMS保存一个 窗口-状态 的键值对表，检查是否重复添加</li>
+<li>如果是子窗口，那么它的父窗口不能也是子窗口</li>
+<li>根据不同窗口类型，确定是否加WindowToken（窗口令牌）</li>
+<li>为新增的窗口新建一个WindowState</li>
+<li>如果客户端死亡，则不再执行</li>
+<li>窗口参数调整</li>
+<li>如果新增了WindowToken,添加到全局表</li>
+<li>重新调整窗口顺序</li>
+<li>计算窗口大小</li>
+<li>分配最终层级值</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/16/multimedia/ffmpeg/" rel="next" title="FFMPEG">
+                <i class="fa fa-chevron-left"></i> FFMPEG
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/15/android-framework/aosp-nexus/" rel="prev" title="AOSP编译Nexus真机镜像">
+                AOSP编译Nexus真机镜像 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Li Xiaolong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#工作方式"><span class="nav-number">1.</span> <span class="nav-text">工作方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-WMS的IPC架构"><span class="nav-number">2.</span> <span class="nav-text">1.2    WMS的IPC架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#本地代理"><span class="nav-number">2.1.</span> <span class="nav-text">本地代理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewRoot是什么？"><span class="nav-number">2.2.</span> <span class="nav-text">ViewRoot是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IWindowSession是什么？"><span class="nav-number">2.3.</span> <span class="nav-text">IWindowSession是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IWindow是什么？"><span class="nav-number">2.4.</span> <span class="nav-text">IWindow是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">2.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加窗口"><span class="nav-number">2.6.</span> <span class="nav-text">添加窗口</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Li Xiaolong</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.3.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.6.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
