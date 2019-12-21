@@ -1,9 +1,3 @@
----
-title: css
-date: 2018-10-16 15:28:42
-tags:
----
-
 ##
 
 [w3school animation](http://www.w3school.com.cn/css3/css3_animation.asp)
@@ -27,11 +21,11 @@ tags:
 
 ~~~
 div {
-width:100px;
-height:100px;
-background:red;
-position:relative;
-animation:mymove 3s;
-animation-iteration-count:3;
+    width:100px;
+    height:100px;
+    background:red;
+    position:relative;
+    animation:mymove 3s;
+    animation-iteration-count:3;
 }
 ~~~

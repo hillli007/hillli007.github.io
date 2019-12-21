@@ -1,10 +1,3 @@
----
-title: Binder
-date: 2018-10-15
-tags:
-categories: Android
----
-
 ### AIDL
 
 最常见的Binder应用就是AIDL了，AIDL让IPC通讯就像进程内的调用函数那样简单。自动的帮你完成了参数序列化发送以及解析返回数据的那一系列麻烦。而需要做的就是写上一个接口文件，然后利用aidl工具转化一下得到另一个java文件，这个文件在服务和客户端程序各放一份。服务程序继承IxxxxService.Stub 然后将函数接口里面的逻辑代码实现一下。开发者甚至完全感觉不到Binder的存在。

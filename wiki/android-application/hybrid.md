@@ -1,9 +1,4 @@
----
-title: WebView和Native交互方式
-date: 2019-03-02
-tags:
-categories: Android
----
+## WebView和Native交互方式
 
 ### Webview to Java
 

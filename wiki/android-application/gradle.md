@@ -1,22 +1,10 @@
----
-title: gradle
-date: 2018-10-15 00:12:55
-tags:
----
-
 ## 怎样学习Gradle
 
 * Android DSL (Domain Specific Language)
 * Gradle DSL
 * Groovy Language
 
-gradle 和 groovy 区别与联系:
-
-gradle 中可以写groovy可以写
-
-
-
-### Gradle / Gradle Plugin / Gradle Wraper 区别
+### Gradle / Gradle Plugin / Gradle Wraper
 
 
 ### Groovy

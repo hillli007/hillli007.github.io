@@ -1,9 +1,3 @@
----
-title: android-view
-date: 2018-10-15 00:07:03
-tags:
----
-
 ### View遍历
 
 requestLayout()
@@ -65,7 +59,7 @@ ViewGroup的dispatch则要考虑更多：
 
 不管怎样最终要确定这次dispatch是不是处理了，一般来说，只要有一个节点的dispatch返回true就是整个view树这次事件分发的结束标识
 
-~~~
+~~~java
 View mTarget=null;  //保存捕获Touch事件处理的子View
 
 public boolean dispatchTouchEvent(MotionEvent ev) {

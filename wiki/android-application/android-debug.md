@@ -1,10 +1,3 @@
----
-title: Android调试技巧
-date: 2018-10-15
-tags:
-categories: Android
----
-
 ## 断点调试
 
 断点调试是指在进程运行在某段代码时停下来，然后在停下来的点上接着一行一行地执行代码(Step Over),或者进入方法的具体实现(Step Into)。
@@ -12,19 +5,15 @@ categories: Android
 
 ### JDWP (Java Debug Wire Protocol)
 
-jdwp 是 dalvik VM 的一个线程，可以建立在adb或者tcp基础上，与DDMS或debugger进行通信。一般都用IDE自带调试,jdb本来是一个交互式shell的调试工具，。
+**JDWP** 是 **Dalvik VM** 的一个线程, 可以建立在adb或者tcp基础上, 与DDMS或Debugger进行通信。
 
-~~~
-adb forward tcp:<port> jdwp:<process pid>
-~~~
+一般IDE自带调试隐藏了这个细节, 实际上还可以用jdb这个个交互式shell的调试工具来通信JDWP线程。
 
-具体命令：
+首先需要设置adb转发: `adb forward tcp:<port> jdwp:<process pid>`
 
-~~~
-adb forward tcp:8700 jdwp:$PID
-~~~
+具体命令：`adb forward tcp:8700 jdwp:$PID`
 
-PS: 使用 adb jdwp 就能显示所有支持jdwp调试的进行进程 pid。
+?> PS: 使用 `adb jdwp` 就能显示所有支持jdwp调试的进行进程 pid。
 
 以下命令进入jdb调试Shell：
 

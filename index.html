@@ -3,15 +3,23 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>HillLee's Wiki</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
 
+  <!-- Themeable -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <!-- Custom theme stylesheet -->
+  <link rel="stylesheet" href="theme-custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0"></script>
+  <!-- Mermaid -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
   <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <!--emoji-->
+  <script src="//unpkg.com/docsify/lib/plugins/emoji.js"></script>
+
 </head>
 
 <body>
@@ -21,12 +29,13 @@
       startOnLoad: false
     });
     window.$docsify = {
-      name: '',
-      repo: '',
-      coverpage: true,
+      name: 'HillLee\'s Wiki',
+      homepage: 'README.md',
+
       loadSidebar: true,
       subMaxLevel: 2,
       loadNavbar: true,
+      auto2top: true,
 
       markdown: {
         renderer: {
@@ -39,10 +48,39 @@
             return this.origin.code.apply(this, arguments);
           }
         }
-      }
+      },
+
+      themeable: {
+        readyTransition: false,
+        responsiveTables: true
+      },
+
+      copyCode: {
+        buttonText: 'Copy to clipboard',
+        errorText: 'Error',
+        successText: 'Copied'
+      },
+
+      pagination: {
+        previousText: 'Prev',
+        nextText: 'Next',
+        crossChapter: true
+      },
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <!--注意插件脚本一定要放在docsify脚本之后-->
+  <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <!--markdown 语法高亮-->
+  <script src="//unpkg.com/prismjs/components/prism-bash.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-java.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-c.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-cpp.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-javascript.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-python.min.js"></script>
+  <!-- Latest v2.x.x -->
+  <script src="https://unpkg.com/docsify-copy-code@2"></script>
 </body>
 
 </html>
